@@ -1,6 +1,6 @@
 package com.zendesk;
 
-import com.zendesk.console.CommandLineInterface;
+import com.zendesk.search.console.CommandLineInterface;
 
 /**
  * Created by phanindra on 22/05/19.

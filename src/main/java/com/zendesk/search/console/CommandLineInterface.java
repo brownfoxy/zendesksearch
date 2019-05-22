@@ -1,4 +1,4 @@
-package com.zendesk.console;
+package com.zendesk.search.console;
 
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
@@ -28,7 +28,7 @@ public class CommandLineInterface {
             String selected = textIO.newStringInputReader()
                     .read();
             if (selected.trim().equalsIgnoreCase("quit")) {
-                textTerminal.println("exiting from the app..");
+                textTerminal.println("exiting from the app...");
                 System.exit(1);
             }
             int intOption;
