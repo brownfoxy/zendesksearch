@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.ParseException;
 
 import static org.junit.Assert.assertEquals;
@@ -26,12 +27,14 @@ import static org.junit.Assert.assertEquals;
 public class LuceneIndexWriterTest {
 
     static final String INDEX_PATH = "indexDir";
-    static final String JSON_FILE_PATH = "/test.json";
+    static final String JSON_DATA_PATH = "./test-data";
 
 
     public void testWriteIndex() {
+        ClassLoader classLoader = getClass().getClassLoader();
+        URL jsonData = classLoader.getResource(JSON_DATA_PATH);
         try {
-            DataParser jsonDataParser = new JsonDataParser(JSON_FILE_PATH);
+            DataParser jsonDataParser = new JsonDataParser(jsonData.getPath());
             LuceneIndexWriter lw = new LuceneIndexWriter(INDEX_PATH, jsonDataParser);
             lw.createIndex();
 

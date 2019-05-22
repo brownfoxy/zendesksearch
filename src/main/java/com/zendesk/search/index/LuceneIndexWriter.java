@@ -11,6 +11,8 @@ import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -27,12 +29,12 @@ public class LuceneIndexWriter {
 
     private IndexWriter indexWriter = null;
 
-    LuceneIndexWriter(String indexPath, DataParser dataParser) {
+    public LuceneIndexWriter(String indexPath, DataParser dataParser) {
         this.indexPath = indexPath;
         this.dataParser = dataParser;
     }
 
-    void createIndex() {
+    public void createIndex() throws IOException {
 
         // open
         indexWriter = openIndex();
@@ -54,9 +56,10 @@ public class LuceneIndexWriter {
 
 
     private IndexWriter openIndex() {
-        logger.info("opening the index writer at the path" + indexPath);
+        Path path = new File(indexPath).toPath();
+        logger.info("opening the index writer at the path: " + path.toFile().getAbsolutePath() );
         try {
-            Directory dir = FSDirectory.open(new File(indexPath).toPath());
+            Directory dir = FSDirectory.open(path);
             Analyzer analyzer = new StandardAnalyzer();
             IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 
