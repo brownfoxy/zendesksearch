@@ -11,11 +11,14 @@ import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
 import java.io.IOException;
+import org.apache.log4j.Logger;
 
 /**
  * Created by phanindra on 22/05/19.
  */
 public class LuceneIndexWriter {
+
+    private final static Logger logger = Logger.getLogger(LuceneIndexWriter.class);
 
 
     private String indexPath = "";
@@ -51,6 +54,7 @@ public class LuceneIndexWriter {
 
 
     private IndexWriter openIndex() {
+        logger.info("opening the index writer at the path" + indexPath);
         try {
             Directory dir = FSDirectory.open(new File(indexPath).toPath());
             Analyzer analyzer = new StandardAnalyzer();
@@ -61,7 +65,7 @@ public class LuceneIndexWriter {
             return new IndexWriter(dir, iwc);
 
         } catch (Exception e) {
-            System.err.println("Error opening the index. " + e.getMessage());
+            logger.error("opening the index writer at the path: " + indexPath, e);
             return null;
         }
     }
@@ -70,11 +74,12 @@ public class LuceneIndexWriter {
      * Write the document to the index and close it
      */
     private void finish() {
+        logger.info("closing the index writer");
         try {
             indexWriter.commit();
             indexWriter.close();
         } catch (IOException ex) {
-            System.err.println("We had a problem closing the index: " + ex.getMessage());
+            logger.error("We had a problem closing the index: " + ex.getMessage());
         }
     }
 

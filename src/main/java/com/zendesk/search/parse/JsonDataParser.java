@@ -1,5 +1,7 @@
 package com.zendesk.search.parse;
 
+import com.zendesk.search.index.LuceneIndexWriter;
+import org.apache.log4j.Logger;
 import org.apache.lucene.document.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,6 +18,7 @@ import java.util.Set;
  * Created by phanindra on 22/05/19.
  */
 public class JsonDataParser implements DataParser {
+    private final static Logger logger = Logger.getLogger(JsonDataParser.class);
 
     private String jsonFilePath = "";
 
@@ -28,6 +31,7 @@ public class JsonDataParser implements DataParser {
      */
     @Override
     public Iterable<Document> parse() {
+        logger.info("Parsing json file at " + jsonFilePath);
         List<Document> documents = new ArrayList<>();
         InputStream jsonFile = getClass().getResourceAsStream(jsonFilePath);
         Reader readerJson = new InputStreamReader(jsonFile);
