@@ -68,31 +68,7 @@ public class CommandLineInterface {
             }
             String entitySelectionMessage = getEntitySelectionMessage();
             if (intOption == 1) {
-                String entityNumber;
-                String selectedEntity = null;
-
-                while (selectedEntity == null) {
-                    entityNumber = textIO.newStringInputReader().read(entitySelectionMessage);
-                    if (entityNumber.equalsIgnoreCase("quit")) {
-                        respondToQuitCommand(textTerminal);
-                    }
-                    try {
-                        Integer valueOf = Integer.valueOf(entityNumber);
-                        for (Map.Entry<String, Integer> entry : entityMap.entrySet()) {
-                            if (entry.getValue() == valueOf) {
-                                selectedEntity = entry.getKey();
-                                break;
-                            }
-                        }
-                    } catch (NumberFormatException e) {
-                        textTerminal.println(NUMBER_FORMAT_ERROR_MESSAGE);
-                        continue;
-                    }
-                    if (selectedEntity == null) {
-                        textTerminal.println("Invalid input!");
-                    }
-                }
-
+                String selectedEntity = selectEntity(textTerminal, entitySelectionMessage);
                 String searchTerm = textIO.newStringInputReader().read("Enter a search term");
                 String searchValue = textIO.newStringInputReader().read("Enter a search value");
                 SearchQuery searchQuery = new SearchQuery(searchTerm, searchValue, selectedEntity);
@@ -101,7 +77,9 @@ public class CommandLineInterface {
                 searchResultDisplayer.printResult(result);
                 showOptions(textTerminal);
             } else if (intOption == 2) {
-                List<String> fieldsInsideEntity = entitySelectionFlow(textTerminal, entitySelectionMessage);
+                String selectedEntity = selectEntity(textTerminal, entitySelectionMessage);
+
+                List<String> fieldsInsideEntity = zendeskSearchService.findFieldsInsideEntity(selectedEntity);
                 searchResultDisplayer.showFields(fieldsInsideEntity);
                 showOptions(textTerminal);
             } else {
@@ -110,7 +88,7 @@ public class CommandLineInterface {
         }
     }
 
-    private List<String> entitySelectionFlow(TextTerminal<?> textTerminal, String entitySelectionMessage) throws IOException {
+    private String selectEntity(TextTerminal<?> textTerminal, String entitySelectionMessage) {
         String entityNumber;
         String selectedEntity = null;
         while (selectedEntity == null) {
@@ -134,8 +112,7 @@ public class CommandLineInterface {
                 textTerminal.println("Invalid input!");
             }
         }
-
-        return zendeskSearchService.findFieldsInsideEntity(selectedEntity);
+        return selectedEntity;
     }
 
     private void respondToQuitCommand(TextTerminal<?> textTerminal) {
