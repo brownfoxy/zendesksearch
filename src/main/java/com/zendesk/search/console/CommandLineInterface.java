@@ -1,5 +1,6 @@
 package com.zendesk.search.console;
 
+import com.zendesk.App;
 import com.zendesk.search.index.LuceneIndexWriter;
 import com.zendesk.search.parse.JsonDataParser;
 import com.zendesk.search.service.SearchQuery;
@@ -18,6 +19,7 @@ import org.beryx.textio.TextTerminal;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
@@ -27,18 +29,34 @@ import java.util.*;
  */
 public class CommandLineInterface {
     private final static Logger logger = Logger.getLogger(CommandLineInterface.class);
-    final String indexDir = "indexDir1";
-    final String jsonDataPath = "./data";
+    final String defaultIndexDir = "defaultIndexDir";
+    final String defaultJsonDataPath = "./data";
 
     private ZendeskSearchService zendeskSearchService;
     private SearchResultDisplayer searchResultDisplayer;
     private TextIO textIO;
     private Map<String, Integer> entityMap = new LinkedHashMap<>();
     private static final String NUMBER_FORMAT_ERROR_MESSAGE = "Expected an integer value!";
+    private static Properties properties = new Properties();
 
     public CommandLineInterface() {
         textIO = TextIoFactory.getTextIO();
         searchResultDisplayer = new SearchResultDisplayer(textIO);
+    }
+    static {
+        try (InputStream input = App.class.getClassLoader().getResourceAsStream("application.properties")) {
+
+
+
+            if (input == null) {
+                logger.error("Unable to load property file, Using data inside src/main/resources/data");
+            }
+
+            properties.load(input);
+        } catch (IOException ex) {
+            logger.error("Unable to load property file, Using data inside src/main/resources/data", ex);
+            ex.printStackTrace();
+        }
     }
 
     public void run() throws IOException, URISyntaxException {
@@ -138,7 +156,7 @@ public class CommandLineInterface {
     }
 
     private void prepareSearch() throws URISyntaxException, IOException {
-        Directory directory = FSDirectory.open(new File(indexDir).toPath());
+        Directory directory = FSDirectory.open(new File(defaultIndexDir).toPath());
         IndexReader indexReader = DirectoryReader.open(directory);
         final IndexSearcher indexSearcher = new IndexSearcher(indexReader);
         zendeskSearchService = new ZendeskSearchServiceImpl(indexSearcher);
@@ -146,17 +164,32 @@ public class CommandLineInterface {
 
     private void indexData() {
 
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL jsonData = classLoader.getResource(jsonDataPath);
+        String jsonDataPath = properties.getProperty("json.data.path");
+        String path;
+        if (jsonDataPath == null) {
+            jsonDataPath = defaultJsonDataPath;
+            ClassLoader classLoader = getClass().getClassLoader();
+            URL jsonData = classLoader.getResource(jsonDataPath);
+            path = jsonData.getPath();
+        } else {
+            path = new File(jsonDataPath).getAbsolutePath();
+        }
 
+        String indexDir = properties.getProperty("index.dir");
+        if (indexDir == null) {
+            indexDir = defaultIndexDir;
+        } else {
+            indexDir = new File(indexDir).getAbsolutePath();
+        }
         logger.info("Creating index at: " + indexDir);
         try {
-            JsonDataParser jsonDataParser = new JsonDataParser(jsonData.getPath());
+            JsonDataParser jsonDataParser = new JsonDataParser(path);
             LuceneIndexWriter indexWriter = new LuceneIndexWriter(indexDir, jsonDataParser);
             indexWriter.createIndex();
             logger.info("Successfully created index");
         } catch (Exception e) {
             logger.error("Error creating index", e);
+            e.printStackTrace();
             System.exit(1);
         }
 
