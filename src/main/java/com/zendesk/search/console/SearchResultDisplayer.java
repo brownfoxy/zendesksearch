@@ -64,4 +64,11 @@ public class SearchResultDisplayer {
     private String capitalizeFirstCharacter(String entity) {
         return entity.substring(0, 1).toUpperCase() + entity.substring(1);
     }
+
+    public void showFields(List<String> fieldsInsideEntity) {
+        terminal.println();
+        for(String field: fieldsInsideEntity) {
+            terminal.println(field);
+        }
+    }
 }

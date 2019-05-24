@@ -66,10 +66,11 @@ public class CommandLineInterface {
                 textTerminal.println(NUMBER_FORMAT_ERROR_MESSAGE);
                 continue;
             }
+            String entitySelectionMessage = getEntitySelectionMessage();
             if (intOption == 1) {
                 String entityNumber;
                 String selectedEntity = null;
-                String entitySelectionMessage = getEntitySelectionMessage();
+
                 while (selectedEntity == null) {
                     entityNumber = textIO.newStringInputReader().read(entitySelectionMessage);
                     if (entityNumber.equalsIgnoreCase("quit")) {
@@ -100,11 +101,41 @@ public class CommandLineInterface {
                 searchResultDisplayer.printResult(result);
                 showOptions(textTerminal);
             } else if (intOption == 2) {
-                textTerminal.println(String.format("User selected %d", intOption));
+                List<String> fieldsInsideEntity = entitySelectionFlow(textTerminal, entitySelectionMessage);
+                searchResultDisplayer.showFields(fieldsInsideEntity);
+                showOptions(textTerminal);
             } else {
                 textTerminal.println("Invalid input!");
             }
         }
+    }
+
+    private List<String> entitySelectionFlow(TextTerminal<?> textTerminal, String entitySelectionMessage) throws IOException {
+        String entityNumber;
+        String selectedEntity = null;
+        while (selectedEntity == null) {
+            entityNumber = textIO.newStringInputReader().read(entitySelectionMessage);
+            if (entityNumber.equalsIgnoreCase("quit")) {
+                respondToQuitCommand(textTerminal);
+            }
+            try {
+                Integer valueOf = Integer.valueOf(entityNumber);
+                for (Map.Entry<String, Integer> entry : entityMap.entrySet()) {
+                    if (entry.getValue() == valueOf) {
+                        selectedEntity = entry.getKey();
+                        break;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                textTerminal.println(NUMBER_FORMAT_ERROR_MESSAGE);
+                continue;
+            }
+            if (selectedEntity == null) {
+                textTerminal.println("Invalid input!");
+            }
+        }
+
+        return zendeskSearchService.findFieldsInsideEntity(selectedEntity);
     }
 
     private void respondToQuitCommand(TextTerminal<?> textTerminal) {

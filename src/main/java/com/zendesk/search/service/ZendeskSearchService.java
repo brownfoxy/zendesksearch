@@ -21,4 +21,11 @@ public interface ZendeskSearchService {
      * @return
      */
     List<String> findEntities() throws IOException;
+
+    /**
+     * Returns list of fields to search inside an entity
+     * @param entity
+     * @return
+     */
+    List<String> findFieldsInsideEntity(String entity) throws IOException;
 }

@@ -8,6 +8,7 @@ import org.apache.lucene.facet.LabelAndValue;
 import org.apache.lucene.facet.sortedset.DefaultSortedSetDocValuesReaderState;
 import org.apache.lucene.facet.sortedset.SortedSetDocValuesFacetCounts;
 import org.apache.lucene.facet.sortedset.SortedSetDocValuesReaderState;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 
@@ -68,5 +69,21 @@ public class ZendeskSearchServiceImpl implements ZendeskSearchService {
 
         return entities;
 
+    }
+
+    @Override
+    public List<String> findFieldsInsideEntity(String entity) throws IOException {
+        List<String> fields = new ArrayList<>();
+            Term t = new Term("fileName", entity.toLowerCase());
+            Query query = new TermQuery(t);
+        TopDocs topDocs = indexSearcher.search(query, 1);
+        Document doc = indexSearcher.doc(topDocs.scoreDocs[0].doc);
+        for (IndexableField field : doc.getFields()) {
+            String name = field.name();
+            if (!name.equals("fileName")) {
+                fields.add(name);
+            }
+        }
+        return fields;
     }
 }
