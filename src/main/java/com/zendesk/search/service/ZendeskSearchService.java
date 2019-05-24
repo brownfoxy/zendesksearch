@@ -1,10 +1,24 @@
 package com.zendesk.search.service;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by phanindra on 23/05/19.
  */
 public interface ZendeskSearchService {
-    SearchResult searchForFullValueMatching(String fieldName, String fieldValue) throws IOException;
+
+    /**
+     * Finds items whose field value matches exactly
+     * @param query
+     * @return
+     * @throws IOException
+     */
+    SearchResult searchForFullValueMatching(SearchQuery query) throws IOException;
+
+    /**
+     * Gets different entities in the provided data
+     * @return
+     */
+    List<String> findEntities() throws IOException;
 }

@@ -73,4 +73,5 @@ public class LuceneIndexWriterTest {
         assertEquals(1, topDocs.totalHits.value);
 
     }
+
 }

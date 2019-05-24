@@ -1,9 +1,11 @@
 package com.zendesk.search.index;
 
 import com.zendesk.search.parse.DataParser;
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.facet.FacetsConfig;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
@@ -12,8 +14,6 @@ import org.apache.lucene.store.FSDirectory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-
-import org.apache.log4j.Logger;
 
 /**
  * Created by phanindra on 22/05/19.
@@ -39,11 +39,15 @@ public class LuceneIndexWriter {
         // open
         indexWriter = openIndex();
 
+        // Facet on fileName field to get entities available
+        FacetsConfig config = new FacetsConfig();
+        config.setIndexFieldName("fileName", "facet_fileName");
+
         // add docs
         Iterable<Document> documentIterable = dataParser.parse();
         for (Document doc : documentIterable) {
             try {
-                this.indexWriter.addDocument(doc);
+                this.indexWriter.addDocument(config.build(doc));
             } catch (IOException ex) {
                 System.err.println("Error adding documents to the index. " + ex.getMessage());
             }

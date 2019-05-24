@@ -2,6 +2,7 @@ package com.zendesk.search.console;
 
 import com.zendesk.search.index.LuceneIndexWriter;
 import com.zendesk.search.parse.JsonDataParser;
+import com.zendesk.search.service.SearchQuery;
 import com.zendesk.search.service.SearchResult;
 import com.zendesk.search.service.ZendeskSearchService;
 import com.zendesk.search.service.ZendeskSearchServiceImpl;
@@ -19,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Created by phanindra on 22/05/19.
@@ -32,6 +33,8 @@ public class CommandLineInterface {
     private ZendeskSearchService zendeskSearchService;
     private SearchResultDisplayer searchResultDisplayer;
     private TextIO textIO;
+    private Map<String, Integer> entityMap = new LinkedHashMap<>();
+    private static final String NUMBER_FORMAT_ERROR_MESSAGE = "Expected an integer value!";
 
     public CommandLineInterface() {
         textIO = TextIoFactory.getTextIO();
@@ -54,31 +57,68 @@ public class CommandLineInterface {
             String selected = textIO.newStringInputReader()
                     .read();
             if (selected.trim().equalsIgnoreCase("quit")) {
-                textTerminal.println("exiting from the app...");
-                System.exit(1);
+                respondToQuitCommand(textTerminal);
             }
             int intOption;
             try {
                 intOption = Integer.parseInt(selected);
             } catch (NumberFormatException nfe) {
-                textTerminal.println("Invalid input!");
+                textTerminal.println(NUMBER_FORMAT_ERROR_MESSAGE);
                 continue;
             }
             if (intOption == 1) {
-                textTerminal.println(String.format("User selected %d", intOption));
+                String entityNumber;
+                String selectedEntity = null;
+                String entitySelectionMessage = getEntitySelectionMessage();
+                while (selectedEntity == null) {
+                    entityNumber = textIO.newStringInputReader().read(entitySelectionMessage);
+                    if (entityNumber.equalsIgnoreCase("quit")) {
+                        respondToQuitCommand(textTerminal);
+                    }
+                    try {
+                        Integer valueOf = Integer.valueOf(entityNumber);
+                        for (Map.Entry<String, Integer> entry : entityMap.entrySet()) {
+                            if (entry.getValue() == valueOf) {
+                                selectedEntity = entry.getKey();
+                                break;
+                            }
+                        }
+                    } catch (NumberFormatException e) {
+                        textTerminal.println(NUMBER_FORMAT_ERROR_MESSAGE);
+                        continue;
+                    }
+                    if (selectedEntity == null) {
+                        textTerminal.println("Invalid input!");
+                    }
+                }
+
                 String searchTerm = textIO.newStringInputReader().read("Enter a search term");
                 String searchValue = textIO.newStringInputReader().read("Enter a search value");
-                SearchResult result = zendeskSearchService.searchForFullValueMatching(searchTerm, searchValue);
+                SearchQuery searchQuery = new SearchQuery(searchTerm, searchValue, selectedEntity);
+                SearchResult result = zendeskSearchService.searchForFullValueMatching(searchQuery);
                 logger.debug("found " + result.getTotalItems() + " documents");
                 searchResultDisplayer.printResult(result);
                 showOptions(textTerminal);
-
             } else if (intOption == 2) {
                 textTerminal.println(String.format("User selected %d", intOption));
             } else {
                 textTerminal.println("Invalid input!");
             }
         }
+    }
+
+    private void respondToQuitCommand(TextTerminal<?> textTerminal) {
+        textTerminal.println("exiting from the app...");
+        System.exit(1);
+    }
+
+    private String getEntitySelectionMessage() throws IOException {
+        List<String> entities = zendeskSearchService.findEntities();
+
+        for (int i = 0; i < entities.size(); i++) {
+            entityMap.put(entities.get(i), i + 1);
+        }
+        return searchResultDisplayer.showEntitiesSelection(entityMap);
     }
 
     private void showOptions(TextTerminal<?> textTerminal) {
