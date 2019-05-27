@@ -37,7 +37,7 @@ public class CommandLineInterface {
     private TextIO textIO;
     private Map<String, Integer> entityMap = new LinkedHashMap<>();
     private static final String NUMBER_FORMAT_ERROR_MESSAGE = "Expected an integer value!";
-    private static Properties properties = new Properties();
+    public static Properties properties = new Properties();
 
     public CommandLineInterface() {
         textIO = TextIoFactory.getTextIO();

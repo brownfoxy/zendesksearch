@@ -1,6 +1,7 @@
 package com.zendesk.search.console;
 
 import com.zendesk.search.service.SearchResult;
+import com.zendesk.search.service.SearchResultItem;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -26,7 +27,7 @@ public class SearchResultDisplayerTest {
         result.setTotalItems(1);
         Document document = new Document();
         document.add(new StringField("_id", "1", Field.Store.YES));
-        result.addItem(document);
+        result.addItem(new SearchResultItem(document));
         resultDisplayer.printResult(result);
         assertTrue(terminal.getOutput().contains("Displaying 1 of 1 items"));
     }

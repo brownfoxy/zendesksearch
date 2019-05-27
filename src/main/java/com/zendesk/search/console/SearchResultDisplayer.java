@@ -1,15 +1,13 @@
 package com.zendesk.search.console;
 
 import com.zendesk.search.service.SearchResult;
+import com.zendesk.search.service.SearchResultItem;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by phanindra on 23/05/19.
@@ -27,21 +25,52 @@ public class SearchResultDisplayer {
             terminal.println("No data found!");
             return;
         }
-        List<Document> items = searchResult.getItems();
-        terminal.println(String.format("Displaying %d of %d items", items.size(), searchResult.getTotalItems()));
-        terminal.println("**********************RESULT START***********************************");
+        List<SearchResultItem> items = searchResult.getItems();
         terminal.println();
-        for (Document item : items) {
-            List<IndexableField> fields = item.getFields();
+        terminal.println(String.format("Displaying %d of %d items", items.size(), searchResult.getTotalItems()));
+        terminal.println();
+        int size = items.size();
+        for (int i=0; i<size; i++) {
+            terminal.println("==================================================================");
+            terminal.println(String.format("Item %d/%d", i+1, size));
+            terminal.println("==================================================================");
+            List<IndexableField> fields = items.get(i).getDocument().getFields();
             for (IndexableField field : fields) {
                 terminal.println(String.format("%-20s %s", field.name(), field.stringValue()));
-                ;
             }
+            printRelatedResult(items.get(i));
         }
         terminal.println();
-        terminal.println("**********************RESULT END***********************************");
+        terminal.println("==================================================================");
+    }
 
-
+    private void printRelatedResult(SearchResultItem item) {
+        Properties properties = CommandLineInterface.properties;
+        Map<String, SearchResult> itemRelatedEntities = item.getRelatedEntities();
+        String relatedResultConfig = properties.getProperty("related.result.full.display");
+        if (Boolean.valueOf(relatedResultConfig)) {
+            Set<Map.Entry<String, SearchResult>> entrySet = itemRelatedEntities.entrySet();
+            for (Map.Entry<String, SearchResult> entry : entrySet) {
+                terminal.println();
+                String key = entry.getKey();
+                SearchResult value = entry.getValue();
+                terminal.println(String.format("Displaying %d of %d related %s", value.getItems().size(), value.getTotalItems(), key));
+                terminal.println();
+                List<SearchResultItem> valueItems = value.getItems();
+                for (int i=0; i<valueItems.size(); i++) {
+                    terminal.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                    terminal.println(String.format("%s %d/%d", key, i+1, valueItems.size()));
+                    terminal.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                    terminal.println();
+                    Document document = valueItems.get(i).getDocument();
+                    List<IndexableField> fields = document.getFields();
+                    for (IndexableField field : fields) {
+                        terminal.println(String.format("%-20s %s", field.name(), field.stringValue()));
+                    }
+                    terminal.println();
+                }
+            }
+        }
     }
 
     public String showEntitiesSelection(Map<String, Integer> entities) {

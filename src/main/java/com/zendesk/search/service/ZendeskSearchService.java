@@ -1,6 +1,9 @@
 package com.zendesk.search.service;
 
+import org.apache.lucene.document.Document;
+
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -21,6 +24,15 @@ public interface ZendeskSearchService {
      * @return
      */
     List<String> findEntities() throws IOException;
+
+    /**
+     * Given a document, find other related documents whose type is not <code>entityNameLowercase</code>
+     * @param doc
+     * @param entityNameLowercase
+     * @return
+     * @throws IOException
+     */
+    HashMap<String, SearchResult> findRelatedResult(Document doc, String entityNameLowercase) throws IOException;
 
     /**
      * Returns list of fields to search inside an entity

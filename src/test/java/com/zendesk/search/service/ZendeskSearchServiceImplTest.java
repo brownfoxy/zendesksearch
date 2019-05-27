@@ -16,7 +16,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -26,7 +28,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ZendeskSearchServiceImplTest {
     private Directory inMemory;
-    private ZendeskSearchService searchService;
+    private ZendeskSearchServiceImpl searchService;
 
     @Before
     public void createInMemoryIndex() {
@@ -38,18 +40,21 @@ public class ZendeskSearchServiceImplTest {
             inMemory = new ByteBuffersDirectory();
             IndexWriter indexWriter = new IndexWriter(inMemory, indexWriterConfig);
             Document doc1 = new Document();
+            doc1.add(new StringField("fileName", "test", Field.Store.YES));
             doc1.add(new StringField("_id", "1", Field.Store.YES));
             doc1.add(new StringField("name", "foo", Field.Store.YES));
             doc1.add(new SortedSetDocValuesFacetField("fileName", "users"));
             indexWriter.addDocument(config.build(doc1));
 
             Document doc2 = new Document();
+            doc1.add(new StringField("fileName", "test", Field.Store.YES));
             doc2.add(new StringField("_id", "2", Field.Store.YES));
             doc2.add(new StringField("name", "foo bar", Field.Store.YES));
             doc2.add(new SortedSetDocValuesFacetField("fileName", "tickets"));
             indexWriter.addDocument(config.build(doc2));
 
             Document emptyValue = new Document();
+            emptyValue.add(new StringField("fileName", "test", Field.Store.YES));
             emptyValue.add(new StringField("_id", "456", Field.Store.YES));
             emptyValue.add(new StringField("alias", "", Field.Store.YES));
             indexWriter.addDocument(config.build(emptyValue));
@@ -66,18 +71,20 @@ public class ZendeskSearchServiceImplTest {
 
     @Test
     public void testExactMatchQuery() throws IOException {
-            SearchQuery searchQuery = new SearchQuery("name", "foo", null);
+            searchService.getSettingsService().setRelatedEntitySettings(null);
+            SearchQuery searchQuery = new SearchQuery("name", "foo", "test");
             SearchResult result = searchService.searchForFullValueMatching(searchQuery);
             assertEquals(1, result.getTotalItems());
-            assertEquals("foo", result.getItems().get(0).get("name"));
+            assertEquals("foo", result.getItems().get(0).getDocument().get("name"));
     }
 
     @Test
     public void testEmptyValue() throws IOException {
-            SearchQuery searchQuery = new SearchQuery("alias", "", null);
+            searchService.getSettingsService().setRelatedEntitySettings(null);
+            SearchQuery searchQuery = new SearchQuery("alias", "", "test");
             SearchResult result = searchService.searchForFullValueMatching(searchQuery);
             assertEquals(1, result.getTotalItems());
-            assertEquals("456", result.getItems().get(0).get("_id"));
+            assertEquals("456", result.getItems().get(0).getDocument().get("_id"));
     }
 
     @Test

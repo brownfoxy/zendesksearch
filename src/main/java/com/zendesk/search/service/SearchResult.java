@@ -3,14 +3,16 @@ package com.zendesk.search.service;
 import org.apache.lucene.document.Document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by phanindra on 23/05/19.
  */
 public class SearchResult {
 
-    private List<Document> items = new ArrayList<>();
+    private List<SearchResultItem> items = new ArrayList<>();
     private long totalItems;
 
     public long getTotalItems() {
@@ -21,13 +23,16 @@ public class SearchResult {
         this.totalItems = totalItems;
     }
 
-    public List<Document> getItems() {
+    public List<SearchResultItem> getItems() {
         return items;
     }
 
-    public void addItem(Document item) {
+    public void addItem(SearchResultItem item) {
         items.add(item);
     }
+
+
+
 
 
 }
