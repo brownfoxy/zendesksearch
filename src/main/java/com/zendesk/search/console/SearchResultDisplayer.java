@@ -45,10 +45,7 @@ public class SearchResultDisplayer {
     }
 
     private void printRelatedResult(SearchResultItem item) {
-        Properties properties = CommandLineInterface.properties;
         Map<String, SearchResult> itemRelatedEntities = item.getRelatedEntities();
-        String relatedResultConfig = properties.getProperty("related.result.full.display");
-        if (Boolean.valueOf(relatedResultConfig)) {
             Set<Map.Entry<String, SearchResult>> entrySet = itemRelatedEntities.entrySet();
             for (Map.Entry<String, SearchResult> entry : entrySet) {
                 terminal.println();
@@ -70,7 +67,6 @@ public class SearchResultDisplayer {
                     terminal.println();
                 }
             }
-        }
     }
 
     public String showEntitiesSelection(Map<String, Integer> entities) {
