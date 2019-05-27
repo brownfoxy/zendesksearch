@@ -31,12 +31,13 @@ public class JsonDataParser implements DataParser {
      */
     @Override
     public Iterable<Document> parse() throws IOException {
+        String extension = ".json";
         logger.info("Parsing json file(s) at " + jsonDataPath);
 
         List<Document> documents = new ArrayList<>();
         File dataFolder = new File(jsonDataPath);
         if (dataFolder.exists()) {
-            File[] jsonFiles = dataFolder.listFiles();
+            File[] jsonFiles = dataFolder.listFiles((d, s) -> s.toLowerCase().endsWith(extension));
             for (File jsonFile : jsonFiles) {
                 int indexOfDot = jsonFile.getName().indexOf(".");
                 String fileName = jsonFile.getName().substring(0, indexOfDot);
