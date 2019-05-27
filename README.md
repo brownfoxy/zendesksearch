@@ -67,6 +67,16 @@ mvn clean package
 ```
 * Run again to test with new data
 
+<br/> **Note**: Even when the data is huge, Processing is done normally and counts of the matching entities are displayed correctly. However, in response to a single search query, number of entities - with full entity details - to display on the console are limited to 30 (10 from each entity catagory). Because it'd be hard to go through one huge search result on the console. Same information is conveyed to the user through appropriate message.
+e.g
+```
+Select 1) Users or 2) Tickets or 3) Organizations: ​1
+Enter search field: ​name
+Enter search value: ​Catalina Simpson
+
+Displaying 10 of 11000 items
+```
+<br/> If the user would like to see more than 30 results per query, It can be achieved by enhancing with pagination. Which is not implemented as of now.
 
 ## Authors
 
