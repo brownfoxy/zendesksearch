@@ -50,10 +50,13 @@ public class ZendeskSearchServiceImpl implements ZendeskSearchService {
         Query query = new BooleanQuery.Builder().add(booleanClause1).add(booleanClause2).build();
 
         // selected entity
-        TopDocs topDocs = indexSearcher.search(query, 10);
-        TotalHits totalHits = topDocs.totalHits;
 
-        result.setTotalItems(totalHits.value);
+        TopScoreDocCollector collector = TopScoreDocCollector.create(10, Integer.MAX_VALUE);
+        indexSearcher.search(query, collector);
+        TopDocs topDocs = collector.topDocs();
+        int totalHits = collector.getTotalHits();
+
+        result.setTotalItems(totalHits);
 
         for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
             SearchResultItem searchResultItem = new SearchResultItem();
