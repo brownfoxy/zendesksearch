@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -30,7 +31,7 @@ import java.util.*;
 public class CommandLineInterface {
     private final static Logger logger = Logger.getLogger(CommandLineInterface.class);
     final String defaultIndexDir = "defaultIndexDir";
-    final String defaultJsonDataPath = "./data";
+    final String defaultJsonDataPath = "target/data";
 
     private ZendeskSearchService zendeskSearchService;
     private SearchResultDisplayer searchResultDisplayer;
@@ -170,9 +171,8 @@ public class CommandLineInterface {
         String path;
         if (jsonDataPath == null) {
             jsonDataPath = defaultJsonDataPath;
-            ClassLoader classLoader = getClass().getClassLoader();
-            URL jsonData = classLoader.getResource(jsonDataPath);
-            path = jsonData.getPath();
+            jsonDataPath = new File(jsonDataPath).getAbsolutePath();
+            logger.info("Reading json data from "+ jsonDataPath);
         } else {
             path = new File(jsonDataPath).getAbsolutePath();
         }
@@ -185,7 +185,7 @@ public class CommandLineInterface {
         }
         logger.info("Creating index at: " + indexDir);
         try {
-            JsonDataParser jsonDataParser = new JsonDataParser(path);
+            JsonDataParser jsonDataParser = new JsonDataParser(jsonDataPath);
             LuceneIndexWriter indexWriter = new LuceneIndexWriter(indexDir, jsonDataParser);
             indexWriter.createIndex();
             logger.info("Successfully created index");
