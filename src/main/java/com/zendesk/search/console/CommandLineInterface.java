@@ -87,11 +87,13 @@ public class CommandLineInterface {
             String entitySelectionMessage = getEntitySelectionMessage();
             if (intOption == 1) {
                 String selectedEntity = selectEntity(textTerminal, entitySelectionMessage);
-                String searchTerm = textIO.newStringInputReader().read("Enter a search term");
-                String searchValue = textIO.newStringInputReader().read("Enter a search value");
+                String searchTerm = textIO.newStringInputReader().read("Enter search field");
+                String searchValue = textIO.newStringInputReader().withMinLength(0).read("Enter search value");
+                if (searchValue.isEmpty()) {
+                    textTerminal.println("Searching for items where " + searchTerm + " is empty...");
+                }
                 SearchQuery searchQuery = new SearchQuery(searchTerm, searchValue, selectedEntity);
                 SearchResult result = zendeskSearchService.searchForFullValueMatching(searchQuery);
-                logger.debug("found " + result.getTotalItems() + " documents");
                 searchResultDisplayer.printResult(result);
                 showOptions(textTerminal);
             } else if (intOption == 2) {

@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ZendeskSearchServiceImplTest {
     private Directory inMemory;
+    private ZendeskSearchService searchService;
 
     @Before
     public void createInMemoryIndex() {
@@ -47,43 +48,54 @@ public class ZendeskSearchServiceImplTest {
             doc2.add(new StringField("name", "foo bar", Field.Store.YES));
             doc2.add(new SortedSetDocValuesFacetField("fileName", "tickets"));
             indexWriter.addDocument(config.build(doc2));
+
+            Document emptyValue = new Document();
+            emptyValue.add(new StringField("_id", "456", Field.Store.YES));
+            emptyValue.add(new StringField("alias", "", Field.Store.YES));
+            indexWriter.addDocument(config.build(emptyValue));
+
             indexWriter.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // before you can search
+        createSearcher();
     }
 
     @Test
-    public void testExactMatchQuery() {
-        IndexReader indexReader = null;
-        try {
-            indexReader = DirectoryReader.open(inMemory);
-            final IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-            ZendeskSearchService zendeskSearchService = new ZendeskSearchServiceImpl(indexSearcher);
+    public void testExactMatchQuery() throws IOException {
             SearchQuery searchQuery = new SearchQuery("name", "foo", null);
-            SearchResult result = zendeskSearchService.searchForFullValueMatching(searchQuery);
+            SearchResult result = searchService.searchForFullValueMatching(searchQuery);
             assertEquals(1, result.getTotalItems());
             assertEquals("foo", result.getItems().get(0).get("name"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    }
+
+    @Test
+    public void testEmptyValue() throws IOException {
+            SearchQuery searchQuery = new SearchQuery("alias", "", null);
+            SearchResult result = searchService.searchForFullValueMatching(searchQuery);
+            assertEquals(1, result.getTotalItems());
+            assertEquals("456", result.getItems().get(0).get("_id"));
     }
 
     @Test
     public void testFacetQuery() throws IOException {
+            List<String> entities = searchService.findEntities();
+            assertTrue(entities.contains("users"));
+            assertTrue(entities.contains("tickets"));
+    }
+
+
+    public void createSearcher() {
         IndexReader indexReader = null;
         try {
             indexReader = DirectoryReader.open(inMemory);
             final IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-            ZendeskSearchService zendeskSearchService = new ZendeskSearchServiceImpl(indexSearcher);
-            List<String> entities = zendeskSearchService.findEntities();
-            assertTrue(entities.contains("users"));
-            assertTrue(entities.contains("tickets"));
+            searchService = new ZendeskSearchServiceImpl(indexSearcher);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }
