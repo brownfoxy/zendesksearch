@@ -1,6 +1,5 @@
 package com.zendesk.search.service;
 
-import com.zendesk.search.console.CommandLineInterface;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetResult;
 import org.apache.lucene.facet.Facets;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by phanindra on 23/05/19.
@@ -126,55 +124,8 @@ public class ZendeskSearchServiceImpl implements ZendeskSearchService {
                 result.addItem(searchResultItem);
             }
             relatedResult.put(e, result);
-
-
-
         }
         return  relatedResult;
-//        List<String> entities = findEntities();
-//        List<String> relatedEntities = entities.stream().filter(e -> !e.equals(entityNameLowercase)).collect(Collectors.toList());
-
-
-//        for (String e : relatedEntities) {
-//            String fields = CommandLineInterface.properties.getProperty("related.result.display." + entityNameLowercase + "."+ e.toLowerCase() + ".field");
-//            if (fields != null) {
-//                String[] fieldArray = fields.split(",");
-//                // search result
-//                SearchResult result = new SearchResult();
-//
-//                // e.g fileName:ticket AND organisation_id=45
-//                // e.g fileName:ticket AND (submitter_id=45 OR assignee_id=45)
-//                Term fileName = new Term("fileName", e);
-//                TermQuery entityQuery = new TermQuery(fileName);
-//
-//                BooleanClause entityClause = new BooleanClause(entityQuery, BooleanClause.Occur.MUST);
-//                BooleanQuery.Builder builder = new BooleanQuery.Builder();
-//                builder.add(entityClause);
-//
-//                BooleanQuery.Builder fieldQueryBuilder = new BooleanQuery.Builder();
-//
-//                for (String f : fieldArray) {
-//                    Term relatedField = new Term("_id", doc.get(f));
-//                    TermQuery relatedFieldQuery = new TermQuery(relatedField);
-//                    BooleanClause fieldClause = new BooleanClause(relatedFieldQuery, BooleanClause.Occur.SHOULD);
-//                    fieldQueryBuilder.add(fieldClause);
-//                }
-//                builder.add(new BooleanClause(fieldQueryBuilder.build(), BooleanClause.Occur.MUST));
-//                TopDocs topDocs = indexSearcher.search(builder.build(), 10);
-//                TotalHits totalHits = topDocs.totalHits;
-//
-//                result.setTotalItems(totalHits.value);
-//
-//                for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-//                    Document document = indexSearcher.doc(scoreDoc.doc);
-//                    SearchResultItem searchResultItem = new SearchResultItem();
-//                    searchResultItem.setDocument(document);
-//                    result.addItem(searchResultItem);
-//                }
-//                relatedResult.put(e, result);
-//            }
-//        }
-//        return relatedResult;
     }
 
     @Override

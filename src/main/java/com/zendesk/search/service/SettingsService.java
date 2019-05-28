@@ -6,6 +6,10 @@ import java.util.Map;
 /**
  * Created by phanindra on 27/05/19.
  */
+
+/**
+ * Container for settings about how organizations, tickets, users are related to one another
+ */
 public class SettingsService {
 
     private Map<String, Map<String, String>> relatedEntitySettings = new HashMap<>();

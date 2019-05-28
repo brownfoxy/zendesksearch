@@ -21,8 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -168,13 +166,10 @@ public class CommandLineInterface {
     private void indexData() {
 
         String jsonDataPath = properties.getProperty("json.data.path");
-        String path;
         if (jsonDataPath == null) {
             jsonDataPath = defaultJsonDataPath;
             jsonDataPath = new File(jsonDataPath).getAbsolutePath();
             logger.info("Reading json data from "+ jsonDataPath);
-        } else {
-            path = new File(jsonDataPath).getAbsolutePath();
         }
 
         String indexDir = properties.getProperty("index.dir");

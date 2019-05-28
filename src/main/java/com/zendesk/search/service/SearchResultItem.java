@@ -8,6 +8,10 @@ import java.util.Map;
 /**
  * Created by phanindra on 27/05/19.
  */
+
+/**
+ * Represents one of many entries in the search result
+ */
 public class SearchResultItem {
     private Document document;
     private Map<String, SearchResult> relatedEntities = new HashMap();

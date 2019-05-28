@@ -7,7 +7,9 @@ import org.apache.lucene.index.IndexableField;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by phanindra on 23/05/19.

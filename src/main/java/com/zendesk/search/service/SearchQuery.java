@@ -4,6 +4,7 @@ package com.zendesk.search.service;
  * Created by phanindra on 24/05/19.
  *
  */
+// Represents a query issued to backend system.
 public class SearchQuery {
     private String searchTerm;
     private String searchValue;

@@ -1,15 +1,15 @@
 package com.zendesk.search.service;
 
-import org.apache.lucene.document.Document;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by phanindra on 23/05/19.
  */
+
+/**
+ * Represents a response to one search query
+  */
 public class SearchResult {
 
     private List<SearchResultItem> items = new ArrayList<>();
