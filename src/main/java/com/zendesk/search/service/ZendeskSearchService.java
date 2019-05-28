@@ -1,5 +1,7 @@
 package com.zendesk.search.service;
 
+import com.zendesk.search.model.SearchQuery;
+import com.zendesk.search.model.SearchResult;
 import org.apache.lucene.document.Document;
 
 import java.io.IOException;

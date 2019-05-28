@@ -1,4 +1,4 @@
-package com.zendesk.search.service;
+package com.zendesk.search.model;
 
 /**
  * Created by phanindra on 24/05/19.

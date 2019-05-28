@@ -1,7 +1,7 @@
 package com.zendesk.search.console;
 
-import com.zendesk.search.service.SearchResult;
-import com.zendesk.search.service.SearchResultItem;
+import com.zendesk.search.model.SearchResult;
+import com.zendesk.search.model.SearchResultItem;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.beryx.textio.TextIO;

@@ -1,5 +1,8 @@
 package com.zendesk.search.service;
 
+import com.zendesk.search.model.SearchQuery;
+import com.zendesk.search.model.SearchResult;
+import com.zendesk.search.model.SearchResultItem;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetResult;
 import org.apache.lucene.facet.Facets;

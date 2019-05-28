@@ -1,4 +1,4 @@
-package com.zendesk.search.service;
+package com.zendesk.search.model;
 
 import org.apache.lucene.document.Document;
 
