@@ -18,11 +18,11 @@ public class SearchResultDisplayer {
 
     private TextTerminal terminal;
 
-    SearchResultDisplayer(TextIO textIO) {
+    public SearchResultDisplayer(TextIO textIO) {
         this.terminal = textIO.getTextTerminal();
     }
 
-    void printResult(SearchResult searchResult) {
+    public void printResult(SearchResult searchResult) {
         if (searchResult.getTotalItems() == 0L) {
             terminal.println("No data found!");
             return;
