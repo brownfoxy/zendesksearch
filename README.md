@@ -47,8 +47,9 @@ mvn clean package
 Simply run the below command to launch application to do some searching!
 ```
 zendesksearch $java -jar target/zendesksearch-1.0-SNAPSHOT.jar
-
 ```
+Note: To search for empty values in a field, simply do not enter any value while searching.
+
 ## (Optional)Testing with different data
 
 By default, you dont need to supply any data. When the application is running, it gets data from the directory **zendesksearch/target/data**. 
